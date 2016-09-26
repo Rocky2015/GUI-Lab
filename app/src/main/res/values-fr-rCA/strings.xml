@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lab1</string>
+    <string name="hello_message">Bonjour le monde!</string>
+    <string name="buttonText">Je suis un bouton</string>
+    <string name="title_activity_login">Connexion Activité</string>
+    <string name="loginTextview">S'identifier</string>
+    <string name="passwordTextview">Mot de passe</string>
+    <string name="title_activity_list_items">Liste des articles de l'activité</string>
+    <string name="button1">Bouton 1</string>
+    <string name="button2">Bouton 2</string>
+    <string name="switchText">Activer Something</string>
+</resources>
