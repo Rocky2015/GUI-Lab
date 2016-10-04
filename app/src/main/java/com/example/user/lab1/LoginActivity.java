@@ -1,6 +1,7 @@
 package com.example.user.lab1;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,14 +16,14 @@ public class LoginActivity extends AppCompatActivity {
     public static SharedPreferences.Editor editor;
     protected Button button;
     protected String myEmail;
-    final Context context = getApplicationContext();
+     Context context ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(ACTIVITY_NAME, "In OnCreate");
         setContentView(R.layout.activity_login);
-
+        context = getApplicationContext();
         final EditText emailAddress = (EditText)findViewById(R.id.loginEmail);
 
         sharedPref = context.getSharedPreferences("prefsfile", MODE_PRIVATE);
@@ -36,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
              myEmail = emailAddress.getText().toString();
                 editor.putString("email", myEmail);
                 editor.commit();
+            startActivity(new Intent( context, StartActivity.class ));
             }
         );
     }
