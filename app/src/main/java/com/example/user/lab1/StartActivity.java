@@ -1,6 +1,6 @@
 package com.example.user.lab1;
 
-import android.app.Activity;
+
 import android.content.Context;
 import android.content.Intent;
 
@@ -11,9 +11,9 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class StartActivity extends AppCompatActivity {
-    public final String ACTIVITY_NAME = "StartActivity";
+    private final String ACTIVITY_NAME = "StartActivity";
 
-    protected Button button;
+    protected Button button,chatButton;
     Context context ;
 
     @Override
@@ -21,11 +21,18 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.i(ACTIVITY_NAME, "In OnCreate");
         setContentView(R.layout.activity_start);
+
         context=getApplicationContext();
 
         button = (Button)findViewById(R.id.imaButton);
         button.setOnClickListener(e ->startActivityForResult(new Intent( context, ListItemsActivity.class ), 5));
+
+        chatButton = (Button)findViewById(R.id.chatButton);
+        chatButton.setOnClickListener(e ->{
+            Log.i(ACTIVITY_NAME,"User clicked Start Chat");
+        });
     }
+
 
     @Override
     protected void onResume() {
