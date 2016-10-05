@@ -13,8 +13,8 @@ import android.widget.Toast;
 public class StartActivity extends AppCompatActivity {
     private final String ACTIVITY_NAME = "StartActivity";
 
-    protected Button button,chatButton;
-    Context context ;
+    protected Button button, chatButton;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,14 +22,15 @@ public class StartActivity extends AppCompatActivity {
         Log.i(ACTIVITY_NAME, "In OnCreate");
         setContentView(R.layout.activity_start);
 
-        context=getApplicationContext();
+        context = getApplicationContext();
 
-        button = (Button)findViewById(R.id.imaButton);
-        button.setOnClickListener(e ->startActivityForResult(new Intent( context, ListItemsActivity.class ), 5));
+        button = (Button) findViewById(R.id.imaButton);
+        button.setOnClickListener(e -> startActivityForResult(new Intent(context, ListItemsActivity.class), 5));
 
-        chatButton = (Button)findViewById(R.id.chatButton);
-        chatButton.setOnClickListener(e ->{
-            Log.i(ACTIVITY_NAME,"User clicked Start Chat");
+        chatButton = (Button) findViewById(R.id.chatButton);
+        chatButton.setOnClickListener(e -> {
+            Log.i(ACTIVITY_NAME, "User clicked Start Chat");
+            startActivityForResult(new Intent(context, ChatWindow.class), 6);
         });
     }
 
@@ -65,15 +66,15 @@ public class StartActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int responceCode, Intent data){
-        if(requestCode == 5)//coming back from ListITemsActivity
+    public void onActivityResult(int requestCode, int responceCode, Intent data) {
+        if (requestCode == 5)//coming back from ListItemsActivity
         {
             Log.i(ACTIVITY_NAME, "Returned to StartActivity.onActivityResult");
-            Toast.makeText(context, "Im back!!!", Toast.LENGTH_LONG);
+            Toast.makeText(context, "Im back!!!", Toast.LENGTH_LONG).show();
         }
-        if(responceCode == RESULT_OK){
+        if (responceCode == RESULT_OK) {
             String messagePassed = data.getStringExtra("Response");
-            Toast.makeText(StartActivity.this,messagePassed,Toast.LENGTH_LONG).show();
+            Toast.makeText(StartActivity.this, messagePassed, Toast.LENGTH_LONG).show();
 
         }
     }
