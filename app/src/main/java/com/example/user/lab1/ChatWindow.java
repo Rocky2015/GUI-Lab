@@ -12,9 +12,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import static com.example.user.lab1.R.id.scrollView;
 
 
 public class ChatWindow extends AppCompatActivity {
@@ -35,10 +38,13 @@ public class ChatWindow extends AppCompatActivity {
         Button sendButton = (Button) findViewById(R.id.sendButton);
 
 
+
         final ChatAdapter messageAdapter = new ChatAdapter(this);
         listView.setAdapter(messageAdapter);
 
         sendButton.setOnClickListener((v) -> {
+//            final ScrollView scrollview = ((ScrollView) findViewById(R.id.scrollview));
+//            scrollview.fullScroll(ScrollView.FOCUS_DOWN);
             String sendChat = messageText.getText().toString();
 
             messageList.add(sendChat);
