@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.user.lab1">
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
+        android:fullBackupContent="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -24,12 +26,11 @@
             android:label="@string/title_activity_list_items"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <uses-permission android:name="android.permission.CAMERA" />
 
         <activity
             android:name=".ChatWindow"
             android:label="@string/title_activity_chat_window"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

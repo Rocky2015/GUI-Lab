@@ -11,14 +11,14 @@
     <string name="switchText">Enable Something</string>
     <string name="loginName">Login Name</string>
     <string name="loginButton">Login</string>
-    <string name="myFile">MyFile</string>
     <string name="dialog_message">Do you wish to exit?</string>
     <string name="dialog_Title">Exit</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="chatButton">Start Chat</string>
     <string name="title_activity_chat_window">ChatWindow</string>
     <string name="sendButton">Send</string>
     <string name="messageText">Message</string>
+    <string name="TextView">TextView</string>
 
 </resources>

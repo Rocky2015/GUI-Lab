@@ -16,11 +16,11 @@ import android.widget.Toast;
 
 
 public class ListItemsActivity extends AppCompatActivity {
-    public final String ACTIVITY_NAME = "ListItemsActivity";
-    final int REQUEST_IMAGE_CAPTURE = 1;
-    ImageButton imgButton;
-    Switch aSwitch;
-    CheckBox checkBox;
+    private final String ACTIVITY_NAME = "ListItemsActivity";
+    private final int REQUEST_IMAGE_CAPTURE = 1;
+    private ImageButton imgButton;
+    private Switch aSwitch;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,27 +48,23 @@ public class ListItemsActivity extends AppCompatActivity {
                 toast.show();//display your message box
             }
         });
-        checkBox = (CheckBox)findViewById(R.id.checkBox);
+        CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox);
         checkBox.setOnClickListener(e -> {
 
             AlertDialog.Builder confirmBox = new AlertDialog.Builder(ListItemsActivity.this);
             // 2. Chain together various setter methods to set the dialog characteristics
             confirmBox.setMessage(R.string.dialog_message);//Add a dialog message to strings.xml
             confirmBox.setTitle(R.string.dialog_Title);
-            confirmBox.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Intent resultIntent = new Intent();
-                                resultIntent.putExtra("Response", "My information to share");
-                                setResult(Activity.RESULT_OK, resultIntent);
-                                finish();
+            confirmBox.setPositiveButton(R.string.ok, (DialogInterface.OnClickListener) (dialog, id) -> {
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("Response", "My information to share");
+                setResult(Activity.RESULT_OK, resultIntent);
+                finish();
 
-                            }
             });
-            confirmBox.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id){
-                        // User cancelled the dialog
-                    }
-                        });
+            confirmBox.setNegativeButton(R.string.cancel, (DialogInterface.OnClickListener) (dialog, id) -> {
+        // User cancelled the dialog
+    });
             confirmBox.show();
 
 

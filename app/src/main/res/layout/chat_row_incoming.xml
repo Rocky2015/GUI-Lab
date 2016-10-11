@@ -5,12 +5,12 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:text="TextView"
+        android:text="@string/TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView3"
+        android:id="@+id/message_text"
         android:layout_weight="1"
-        android:layout_gravity="right"/>
+        android:layout_gravity="end"/>
 
     <ImageView
         android:layout_width="wrap_content"

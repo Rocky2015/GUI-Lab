@@ -25,11 +25,12 @@
 
     <EditText
         android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/sendButton"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/sendButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/messageText"
+        android:gravity="end"
+        android:hint="@string/messageText"
         android:id="@+id/messageText" />
 
     <Button

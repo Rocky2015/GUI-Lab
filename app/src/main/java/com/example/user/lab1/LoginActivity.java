@@ -6,17 +6,15 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 public class LoginActivity extends AppCompatActivity {
-    protected static final String ACTIVITY_NAME = "LoginActivity";
-    public static SharedPreferences sharedPref;
-    public static SharedPreferences.Editor editor;
-    protected Button button;
-    protected String myEmail;
-     Context context ;
+    private static final String ACTIVITY_NAME = "LoginActivity";
+    private static SharedPreferences sharedPref;
+    private static SharedPreferences.Editor editor;
+    private String myEmail;
+     private Context context ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,14 +27,14 @@ public class LoginActivity extends AppCompatActivity {
         sharedPref = context.getSharedPreferences("prefsfile", MODE_PRIVATE);
         emailAddress.setText( sharedPref.getString("email", "email@domain.com") );
 
-        button = (Button)findViewById(R.id.loginButton1);
+        Button button = (Button) findViewById(R.id.loginButton1);
 
         button.setOnClickListener(e ->{
 
-                editor = sharedPref.edit();
-             myEmail = emailAddress.getText().toString();
-                editor.putString("email", myEmail);
-                editor.commit();
+            editor = sharedPref.edit();
+            myEmail = emailAddress.getText().toString();
+            editor.putString("email", myEmail);
+            editor.commit();
             startActivity(new Intent( context, StartActivity.class ));
             }
         );
