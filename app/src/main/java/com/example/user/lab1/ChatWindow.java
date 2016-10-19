@@ -1,6 +1,8 @@
 package com.example.user.lab1;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -12,17 +14,23 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import static com.example.user.lab1.R.id.scrollView;
-
 
 public class ChatWindow extends AppCompatActivity {
+    Button sendButton;
+    ListView listView;
+    EditText messageText;
+    ChatAdapter messageAdapter;
 
-    private static final ArrayList<String> messageList = new ArrayList<>();
+    Cursor cursor;
+    Context ctx;
+    ChatDatabaseHelper sampleDB = new ChatDatabaseHelper(ctx);
+    ArrayList<String> messageList = new ArrayList<>();
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor newEditor;
 
 
     @Override
@@ -31,23 +39,33 @@ public class ChatWindow extends AppCompatActivity {
         String ACTIVITY_NAME = "ChatWindow";
         Log.i(ACTIVITY_NAME, "In OnCreate");
         setContentView(R.layout.activity_chat_window);
+        cursor = sampleDB.getinfo(sampleDB);
 
+        messageText = (EditText) findViewById(R.id.messageText);
+        listView = (ListView) findViewById(R.id.listView);
+        sendButton = (Button) findViewById(R.id.sendButton);
 
-        final EditText messageText = (EditText) findViewById(R.id.messageText);
-        ListView listView = (ListView) findViewById(R.id.listView);
-        Button sendButton = (Button) findViewById(R.id.sendButton);
-
-
-
-        final ChatAdapter messageAdapter = new ChatAdapter(this);
+        messageAdapter = new ChatAdapter(this);
         listView.setAdapter(messageAdapter);
+        sharedPreferences = getSharedPreferences("exists", Context.MODE_PRIVATE);
+        sharedPreferences.getBoolean("exists", false);
+        if (cursor == null) {
+            do {
+                messageList.add(cursor.getString(0).toString());
+                Log.i("ChatWindow", "Cursor's column count = " + cursor.getColumnName(cursor.getColumnIndex(DataTable.COLUMN_MESSAGE)));
+                Log.i("ChatWindow", "Cursor's column count = " + cursor.getColumnCount());
+                Log.i("ChatWindow", "SQL MESSAGE" + cursor.getString(cursor.getColumnIndex(DataTable.COLUMN_MESSAGE)));
+            } while (cursor.moveToNext());
+        }
 
         sendButton.setOnClickListener((v) -> {
-//            final ScrollView scrollview = ((ScrollView) findViewById(R.id.scrollview));
-//            scrollview.fullScroll(ScrollView.FOCUS_DOWN);
-            String sendChat = messageText.getText().toString();
+            messageList.add(messageText.getText().toString());
+            sampleDB.onInsert(sampleDB, messageText.getText().toString());
 
-            messageList.add(sendChat);
+            newEditor = sharedPreferences.edit();
+            newEditor.putBoolean("exists", true);
+            newEditor.apply();
+
             messageAdapter.notifyDataSetChanged();
             messageText.setText("");
 
@@ -58,7 +76,7 @@ public class ChatWindow extends AppCompatActivity {
     private class ChatAdapter extends ArrayAdapter<String>
 
     {
-        public ChatAdapter(Context ctx) {
+        ChatAdapter(Context ctx) {
             super(ctx, 0);
         }
 
