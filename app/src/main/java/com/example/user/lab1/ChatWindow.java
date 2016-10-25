@@ -26,12 +26,12 @@ public class ChatWindow extends AppCompatActivity {
     ChatAdapter messageAdapter;
 
     Cursor cursor;
-    Context ctx;
+    Context ctx = this;
     ChatDatabaseHelper sampleDB = new ChatDatabaseHelper(ctx);
     ArrayList<String> messageList = new ArrayList<>();
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor newEditor;
-
+    boolean aBoolean = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,7 @@ public class ChatWindow extends AppCompatActivity {
         String ACTIVITY_NAME = "ChatWindow";
         Log.i(ACTIVITY_NAME, "In OnCreate");
         setContentView(R.layout.activity_chat_window);
-        cursor = sampleDB.getinfo(sampleDB);
+        cursor = sampleDB.getInfo(sampleDB);
 
         messageText = (EditText) findViewById(R.id.messageText);
         listView = (ListView) findViewById(R.id.listView);
@@ -48,8 +48,10 @@ public class ChatWindow extends AppCompatActivity {
         messageAdapter = new ChatAdapter(this);
         listView.setAdapter(messageAdapter);
         sharedPreferences = getSharedPreferences("exists", Context.MODE_PRIVATE);
-        sharedPreferences.getBoolean("exists", false);
-        if (cursor == null) {
+        aBoolean = sharedPreferences.getBoolean("exists", false);
+        cursor.moveToFirst();
+
+        if (aBoolean) {
             do {
                 messageList.add(cursor.getString(0).toString());
                 Log.i("ChatWindow", "Cursor's column count = " + cursor.getColumnName(cursor.getColumnIndex(DataTable.COLUMN_MESSAGE)));
@@ -69,8 +71,8 @@ public class ChatWindow extends AppCompatActivity {
             messageAdapter.notifyDataSetChanged();
             messageText.setText("");
 
-        });
 
+        });
     }
 
     private class ChatAdapter extends ArrayAdapter<String>
@@ -102,8 +104,6 @@ public class ChatWindow extends AppCompatActivity {
             return result;
         }
     }
-
-
 }
 
 

@@ -35,16 +35,15 @@ public class ListItemsActivity extends AppCompatActivity {
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         });
+
         aSwitch = (Switch) findViewById(R.id.switch1);
         aSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
-            CharSequence text = "Switch is On";// "Switch is Off"
-            int duration = Toast.LENGTH_SHORT;//= Toast.LENGTH_LONG if Off
             if (aSwitch.isChecked()) {
-                Toast toast = Toast.makeText(ListItemsActivity.this, text, duration);//this is the ListActivity
+                Toast toast = Toast.makeText(ListItemsActivity.this, "Switch is On", Toast.LENGTH_SHORT);//this is the ListActivity
                 toast.show();//display your message box
             } else {
-                Toast toast = Toast.makeText(ListItemsActivity.this, "Switch is Off", duration);//this is the ListActivity
+                Toast toast = Toast.makeText(ListItemsActivity.this, "Switch is Off", Toast.LENGTH_SHORT);//this is the ListActivity
                 toast.show();//display your message box
             }
         });

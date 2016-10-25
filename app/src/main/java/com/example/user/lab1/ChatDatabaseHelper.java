@@ -8,42 +8,43 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class ChatDatabaseHelper extends SQLiteOpenHelper {
-    static final int VERSION_NUM = 1;
-
-   private static String DATABASE_CREATE = "create table "
+    public static final int VERSION_NUM = 1;
+    public static String DATABASE_CREATE = "CREATE TABLE "
             + DataTable.TABLE_NAME
             + "("
-            + DataTable.COLUMN_ID + " integer primary key autoincrement, "
-            + DataTable.COLUMN_MESSAGE + " text not null);";
+            + DataTable.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + DataTable.COLUMN_MESSAGE + " TEXT);";
 
     public ChatDatabaseHelper(Context ctx) {
         super(ctx, DataTable.DATABASE_NAME, null, VERSION_NUM);
-        Log.d("Database Operations","Database Created");
+        Log.d("Database Operations", "Database Created");
 
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(DATABASE_CREATE);
-        Log.d("Database Operations","Database Created");
+        Log.d("Database Operations", "Database Created");
     }
 
+    @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + DataTable.DATABASE_NAME);
-        Log.d("Database Operations","Database Dropped");
+        Log.d("Database Operations", "Database Dropped");
         onCreate(db);
     }
-    public void onInsert(ChatDatabaseHelper cdhelper, String message){
-    SQLiteDatabase writeableSQL = cdhelper.getWritableDatabase();
+
+    public void onInsert(ChatDatabaseHelper cdhelper, String message) {
+        SQLiteDatabase writableDb = cdhelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(DataTable.COLUMN_MESSAGE, message);
-        writeableSQL.insert(DataTable.TABLE_NAME,null,contentValues);
+        writableDb.insert(DataTable.TABLE_NAME, null, contentValues);
     }
 
-    public Cursor getinfo(ChatDatabaseHelper cdh){
-        SQLiteDatabase Query =cdh.getReadableDatabase();
+    public Cursor getInfo(ChatDatabaseHelper chatDatabaseHelper) {
+        SQLiteDatabase SQuery = chatDatabaseHelper.getReadableDatabase();
         String[] message = {DataTable.COLUMN_MESSAGE};
-        Cursor cursor = Query.query(DataTable.DATABASE_NAME,message,null,null,null,null,null);
+        Cursor cursor = SQuery.query(DataTable.TABLE_NAME, message, null, null, null, null, null);
         return cursor;
 
     }
