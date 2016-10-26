@@ -20,4 +20,5 @@
     <string name="messageText">Message</string>
     <string name="title_activity_chat_window">fenêtre de chat</string>
     <string name="TextView">TextView</string>
+    <string name="Weather">Météo</string>
 </resources>

@@ -20,5 +20,7 @@
     <string name="sendButton">Send</string>
     <string name="messageText">Message</string>
     <string name="TextView">TextView</string>
+    <string name="title_activity_weather_forecast">WeatherForecast</string>
+    <string name="Weather">Weather</string>
 
 </resources>

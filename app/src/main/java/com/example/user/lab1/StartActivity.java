@@ -22,14 +22,19 @@ public class StartActivity extends AppCompatActivity {
 
         context = getApplicationContext();
 
-        Button button = (Button) findViewById(R.id.imaButton);
-        button.setOnClickListener(e -> startActivityForResult(new Intent(context, ListItemsActivity.class), 5));
+        Button imaButton = (Button) findViewById(R.id.imaButton);
+        imaButton.setOnClickListener(e -> startActivityForResult(new Intent(context, ListItemsActivity.class), 5));
+
+        Button weatherButton = (Button) findViewById(R.id.weather_button);
+        weatherButton.setOnClickListener(e -> startActivityForResult(new Intent(context, WeatherForecast.class), 3));
 
         Button chatButton = (Button) findViewById(R.id.chatButton);
         chatButton.setOnClickListener(e -> {
             Log.i(ACTIVITY_NAME, "User clicked Start Chat");
             startActivityForResult(new Intent(context, ChatWindow.class), 2);
         });
+
+
     }
 
 
