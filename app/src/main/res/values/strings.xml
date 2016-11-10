@@ -22,5 +22,6 @@
     <string name="TextView">TextView</string>
     <string name="title_activity_weather_forecast">WeatherForecast</string>
     <string name="Weather">Weather</string>
+    <string name="action_settings">Settings</string>
 
 </resources>
