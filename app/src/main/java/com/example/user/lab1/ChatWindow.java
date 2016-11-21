@@ -1,8 +1,10 @@
 package com.example.user.lab1;
 
+
+import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -15,23 +17,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
-
 public class ChatWindow extends AppCompatActivity {
+    Cursor cursor;
     Button sendButton;
     ListView listView;
     EditText messageText;
-    ChatAdapter messageAdapter;
-
-    Cursor cursor;
-    Context ctx = this;
-    ChatDatabaseHelper sampleDB = new ChatDatabaseHelper(ctx);
     ArrayList<String> messageList = new ArrayList<>();
-    SharedPreferences sharedPreferences;
-    SharedPreferences.Editor newEditor;
-    boolean aBoolean = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,40 +34,41 @@ public class ChatWindow extends AppCompatActivity {
         String ACTIVITY_NAME = "ChatWindow";
         Log.i(ACTIVITY_NAME, "In OnCreate");
         setContentView(R.layout.activity_chat_window);
-        cursor = sampleDB.getInfo(sampleDB);
 
         messageText = (EditText) findViewById(R.id.messageText);
         listView = (ListView) findViewById(R.id.listView);
         sendButton = (Button) findViewById(R.id.sendButton);
 
-        messageAdapter = new ChatAdapter(this);
-        listView.setAdapter(messageAdapter);
-        sharedPreferences = getSharedPreferences("exists", Context.MODE_PRIVATE);
-        aBoolean = sharedPreferences.getBoolean("exists", false);
-        cursor.moveToFirst();
+        String query = "SELECT " + ChatDatabaseHelper.KEY_MESSAGE + " FROM " + ChatDatabaseHelper.TABLE_NAME;
+        ChatDatabaseHelper tempDB = new ChatDatabaseHelper(this);
+        SQLiteDatabase db = tempDB.getWritableDatabase();
+        cursor = db.rawQuery(query, null);
+        messageList.add(cursor.getColumnName(cursor.getColumnIndex(ChatDatabaseHelper.KEY_MESSAGE)));
 
-        if (aBoolean) {
-            do {
-                messageList.add(cursor.getString(0).toString());
-                Log.i("ChatWindow", "Cursor's column count = " + cursor.getColumnName(cursor.getColumnIndex(DataTable.COLUMN_MESSAGE)));
-                Log.i("ChatWindow", "Cursor's column count = " + cursor.getColumnCount());
-                Log.i("ChatWindow", "SQL MESSAGE" + cursor.getString(cursor.getColumnIndex(DataTable.COLUMN_MESSAGE)));
-            } while (cursor.moveToNext());
+        sendButton.setOnClickListener(e -> {
+            messageList.add(messageText.getText().toString());
+            ContentValues values = new ContentValues();
+            values.put(ChatDatabaseHelper.KEY_MESSAGE, messageText.getText().toString());
+            db.update(ChatDatabaseHelper.TABLE_NAME, values, ChatDatabaseHelper.KEY_MESSAGE + "=?", new String[]{String.valueOf(ChatDatabaseHelper.KEY_MESSAGE)});
+            Toast.makeText(getBaseContext(), "insert sucessful", Toast.LENGTH_LONG).show();
+        });
+
+        while (!cursor.isAfterLast()) {
+            messageList.add(cursor.getString(0).toString());
+            Log.i(ACTIVITY_NAME, "SQL MESSAGE" + cursor.getString(cursor.getColumnIndex(ChatDatabaseHelper.KEY_MESSAGE)));
+            Log.i(ACTIVITY_NAME, "Cursor’s  column count =" + cursor.getColumnCount());
         }
 
-        sendButton.setOnClickListener((v) -> {
-            messageList.add(messageText.getText().toString());
-            sampleDB.onInsert(sampleDB, messageText.getText().toString());
+        for (int i = 0; i < cursor.getCount(); i++) {
+            cursor.moveToNext();
+            Log.i("ChatWindow ", " Cursor’s  column count = " + cursor.getColumnName(cursor.getColumnIndex(ChatDatabaseHelper.KEY_MESSAGE)));
+        }
+        db.close();
+    }
 
-            newEditor = sharedPreferences.edit();
-            newEditor.putBoolean("exists", true);
-            newEditor.apply();
-
-            messageAdapter.notifyDataSetChanged();
-            messageText.setText("");
-
-
-        });
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     private class ChatAdapter extends ArrayAdapter<String>
