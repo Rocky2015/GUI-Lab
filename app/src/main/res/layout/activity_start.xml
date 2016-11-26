@@ -14,7 +14,9 @@
         android:layout_width="wrap_content"
         android:id="@+id/textView"
         android:layout_height="wrap_content"
-        android:text="@string/hello_message" />
+        android:text="@string/hello_message"
+        android:layout_alignEnd="@+id/imaButton"
+        android:layout_alignParentStart="true" />
 
     <Button
         android:text="@string/buttonText"
@@ -28,6 +30,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/imaButton"
-        android:id="@+id/chatButton" />
+        android:id="@+id/chatButton"
+        android:layout_alignEnd="@+id/imaButton"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>
