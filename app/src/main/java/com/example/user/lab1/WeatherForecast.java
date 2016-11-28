@@ -6,10 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Xml;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -17,238 +15,196 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 
 public class WeatherForecast extends AppCompatActivity {
-    public String url = "http://api.openweathermap.org/data/2.5/weather?q=ottawa,ca&APPID=d99666875e0e51521f0040a3d97d0f6a&mode=xml&units=metric";
-    ForecastQuery foreQuery;
-    TextView txtv1, txtv2,txtv3;
-    ImageView iv;
+    String urlString = "http://api.openweathermap.org/data/2.5/weather?q=ottawa,ca&APPID=d99666875e0e51521f0040a3d97d0f6a&mode=xml&units=metric";
+    TextView textView1, textView2, textView3;
+    ProgressBar progBar;
+    ImageView imageView;
+    String fileName;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather_forecast);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        try {
-            foreQuery = new ForecastQuery();
-            foreQuery.execute(url);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+
+        progBar = (ProgressBar) findViewById(R.id.progressBar);
+
+        imageView = (ImageView) findViewById(R.id.weatherView);
+
+        progBar.setMax(3);
+        progBar.setVisibility(View.VISIBLE);
+        new ForecastQuery().execute(urlString);
+
+
     }
 
     public class ForecastQuery extends AsyncTask<String, Integer, String> {
-        ProgressBar bar2;
+        private int state;
+        String icon;
 
-        @Override
-        protected void onProgressUpdate(Integer... progress) {
-            bar2 = (ProgressBar) findViewById(R.id.progressBar);
-            bar2.setVisibility(View.VISIBLE);
-            bar2.setProgress(progress[0]);
-            if (progress[0] == 100) {
-                bar2.setVisibility(View.INVISIBLE);
-            }
-        }
-
-        protected void onPostExecute(String result) {
-            txtv1 = (TextView) findViewById(R.id.textView4);
-            txtv2 = (TextView) findViewById(R.id.textView5);
-            txtv3 = (TextView) findViewById(R.id.textView6);
-
-            String[] ss = result.split(" ");
-            txtv1.setText("Min: " + ss[0]);
-            txtv2.setText("Current: " + ss[2]);
-            txtv3.setText("Max: " + ss[1]);
-
-            iv = (ImageView) findViewById(R.id.imageView2);
-            try {
-
-                String filename = ss[4];
-                switch (filename) {
-                    case "broken":
-                        filename = "broken";
-                        break;
-                    case "sunny":
-                        filename = "sunny";
-                        break;
-                    case "overcast":
-                        filename = "overcast";
-                        break;
-                    default:
-                        filename = "clear";
-                        break;
-                }
-                FileInputStream inputStream;
-                inputStream = openFileInput(filename);
-                iv.setImageBitmap(BitmapFactory.decodeStream(inputStream));
-                inputStream.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
         protected String doInBackground(String... params) {
-            Integer progress = 0;
+            state = 0;
             try {
+
                 URL url = new URL(params[0]);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(10000);
-                conn.setConnectTimeout(15000);
-                conn.setRequestMethod("GET");
-                conn.setDoInput(true);
-                conn.connect();
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.setDoInput(true);
+                urlConnection.connect();
+                InputStream inputStream = urlConnection.getInputStream();
 
-                XmlPullParser parser = Xml.newPullParser();
-                parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-                parser.setInput(conn.getInputStream(), null);
-                parser.nextTag();
-                int eventType = parser.getEventType();
-                StringBuilder sb = new StringBuilder();
+                XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+                factory.setNamespaceAware(false);
+                XmlPullParser xpp = factory.newPullParser();
+                xpp.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+                xpp.setInput(urlConnection.getInputStream(), null);
+                xpp.nextTag();
+
+                xpp.setInput(inputStream, "UTF8");
+
+                int eventType = XmlPullParser.START_DOCUMENT;
+
                 while (eventType != XmlPullParser.END_DOCUMENT) {
-                    if (eventType == XmlPullParser.START_DOCUMENT) {
-                    } else if (eventType == XmlPullParser.START_TAG) {
-                        if (parser.getName().equals("temperature")) {
-                            if (parser.getAttributeCount() > 0)
-                                for (int i = 0; i < parser.getAttributeCount(); i++) {
-                                    sb.append((parser.getAttributeValue(i) + " "));
-                                    publishProgress(progress += 25);
-                                    SystemClock.sleep(300);
+
+                    switch (eventType) {
+
+                        case XmlPullParser.START_DOCUMENT:
+                            break;
+
+                        case XmlPullParser.END_DOCUMENT:
+                            break;
+
+                        case XmlPullParser.START_TAG:
+                            String name = xpp.getName();
+                            if (name.equals("temperature")) {
+                                String value = xpp.getAttributeValue(null, "value=");
+                                String min = xpp.getAttributeValue(null, "min=");
+                                String max = xpp.getAttributeValue(null, "max=");
+
+                                publishProgress(state += 25, state += 50, state += 75);
+                            }
+                            if (name.equals("weather")) {
+                                icon = xpp.getAttributeValue(null, "icon=");
+
+                                FileOutputStream outputStream;
+                                publishProgress(state += 100);
+                                switch (xpp.getAttributeValue(1)) {
+                                    case "sunny":
+                                        try {
+                                            fileName = "sunny";
+                                            File file = new File(fileName);
+                                            if (!fileExistance(fileName)) {
+                                                HTTPUtils image = new HTTPUtils();
+                                                outputStream = openFileOutput(fileName + ".png", Context.MODE_PRIVATE);
+                                                image.getImage("http://openweathermap.org/img/w/" + icon + ".jpg").compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                                                outputStream.close();
+                                            }
+                                        } catch (Exception e) {
+                                            Toast.makeText(getBaseContext(), "FileNotFound", Toast.LENGTH_LONG);
+                                            e.printStackTrace();
+                                        }
+                                        break;
                                 }
-                        }
-                        if (parser.getName().equals("weather")) {
-                            if (parser.getAttributeCount() > 0)
-                                sb.append((parser.getAttributeValue(1)));
-                            String filename;
-                            FileOutputStream outputStream;
-
-                            switch (parser.getAttributeValue(1)) {
-                                case "sunny":
-                                    try {
-                                        filename = "sunny";
-                                        File file = new File(filename);
-                                        if(!file.exists()) {
-                                            HttpUtils hu = new HttpUtils();
-                                            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                                            hu.getImage("http://www.freeiconspng.com/uploads/sunny-icon-17.png")
-                                                    .compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                                            outputStream.close();
-                                        }
-
-                                    } catch (Exception e) {
-                                        Toast.makeText(getBaseContext(), "FileNotFound", Toast.LENGTH_LONG);
-                                        e.printStackTrace();
-                                    }
-                                    break;
-                                case "broken clouds":
-                                    try {
-                                        filename = "broken";
-                                        File file = new File(filename);
-                                        if(!file.exists()) {
-                                            HttpUtils hu = new HttpUtils();
-                                            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                                            hu.getImage(
-                                                    "http://www.clipartkid.com/images/727/today-s-weather-is-mostly-cloudy-with-a-qrV0Q1-clipart.jpg")
-                                                    .compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                                            outputStream.close();
-                                        }
-                                    } catch (Exception e) {
-                                        Toast.makeText(getBaseContext(), "FileNotFound", Toast.LENGTH_LONG);
-                                        e.printStackTrace();
-                                    }
-                                case "overcast clouds":
-                                    try {
-                                        filename = "overcast";
-                                        File file = new File(filename);
-                                        if(!file.exists()) {
-                                            HttpUtils hu = new HttpUtils();
-                                            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                                            hu.getImage(
-                                                    "http://www.clipartkid.com/images/727/today-s-weather-is-mostly-cloudy-with-a-qrV0Q1-clipart.jpg")
-                                                    .compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                                            outputStream.close();
-                                        }
-
-                                    } catch (Exception e) {
-                                        // Toast.makeText(getBaseContext(), "FileNotFound", Toast.LENGTH_LONG);
-                                        e.printStackTrace();
-                                    }
-                                default:
-                                    try {
-                                        filename = "clear";
-                                        File file = new File(filename);
-                                        if(!file.exists()) {
-                                            HttpUtils hu = new HttpUtils();
-                                            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                                            hu.getImage(
-                                                    "https://investmentscientist.files.wordpress.com/2011/11/clear-sky.jpg")
-                                                    .compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                                            outputStream.close();
-                                        }
-                                    } catch(FileNotFoundException e) {
-                                        Toast.makeText(getBaseContext(), "FileNotFound", Toast.LENGTH_LONG);
-                                        e.printStackTrace();
-                                    }
                             }
                             break;
-                        }
-                    } else if (eventType == XmlPullParser.END_TAG) {
-                    } else if (eventType == XmlPullParser.TEXT) {
                     }
-                    eventType = parser.next();
                 }
-                return sb.toString();
-            } catch (XmlPullParserException e1) {
-                e1.printStackTrace();
-            } catch (ProtocolException e1) {
-                e1.printStackTrace();
-            } catch (MalformedURLException e1) {
-                e1.printStackTrace();
-            } catch (IOException e1) {
-                e1.printStackTrace();
+
+            } catch (
+                    Exception e
+                    )
+
+            {
+                Log.e("XML PARSING", e.getMessage());
             }
+
+
             return null;
+        }
+
+        public boolean fileExistance(String fileName) {
+            File file = getBaseContext().getFileStreamPath(fileName);
+            return file.exists();
+        }
+
+        public void onProgressUpdate(Integer... value) {
+            progBar.setVisibility(View.VISIBLE);
+            switch (state++) {
+                case 0:
+                    textView1.setText(value[0]);
+                    break;
+                case 1:
+                    textView2.setText(value[0]);
+                    break;
+                case 2:
+                    textView3.setText(value[0]);
+                    break;
+            }
+            progBar.setProgress(state);
+
         }
     }
 
-    class HttpUtils {
-        public Bitmap getImage(URL url) {
-            HttpURLConnection connection = null;
-            try {
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-                int responseCode = connection.getResponseCode();
-                if (responseCode == 200) {
-                    return BitmapFactory.decodeStream(connection.getInputStream());
-                } else
-                    return null;
-            } catch (Exception e) {
-                return null;
-            } finally {
-                if (connection != null) {
-                    connection.disconnect();
-                }
-            }
-        }
+    public class HTTPUtils {
 
-        public Bitmap getImage(String urlString) {
+        String imgUrlString = "http://openweathermap.org/img/w/" + fileName + ".png";
+
+        public Bitmap getImage(String imgUrlString) {
             try {
-                URL url = new URL(urlString);
+                URL url = new URL(imgUrlString);
                 return getImage(url);
             } catch (MalformedURLException e) {
                 return null;
             }
+        }
+    }
+
+    protected void onPostExecute(String result) {
+
+        textView1 = (TextView) findViewById(R.id.textView);
+        textView2 = (TextView) findViewById(R.id.textView1);
+        textView3 = (TextView) findViewById(R.id.textView2);
+
+        String[] ss = result.split(" ");
+        textView1.setText("Min: " + ss[0]);
+        textView2.setText("Max: " + ss[1]);
+        textView3.setText("Current: " + ss[2]);
+        try {
+            fileName = ss[4];
+            switch (fileName) {
+                case "broken":
+                    fileName = "Broken";
+                    break;
+                case "sunny":
+                    fileName = "Sunny";
+                    break;
+                case "overcast":
+                    fileName = "Overcast";
+                    break;
+                case "clear":
+                    fileName = "Clear";
+                    break;
+            }
+            FileInputStream inputStream;
+            inputStream = openFileInput(fileName);
+            imageView.setImageBitmap(BitmapFactory.decodeStream(inputStream));
+            inputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
