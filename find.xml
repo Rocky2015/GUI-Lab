@@ -1,7 +1,7 @@
 <application>
   <component name="FindSettings">
-    <option name="customScope" value="Project 'Lab1'" />
-    <option name="defaultScopeName" value="Project 'Lab1'" />
-    <option name="SEARCH_SCOPE" value="Project 'Lab1'" />
+    <option name="customScope" value="File 'F:\School Winter2016\AndroidStudioProjects\PocketHouse\app\src\main\java\com\example\jasonbenoit\pockethouse\HouseActivity.java'" />
+    <option name="defaultScopeName" value="File 'F:\School Winter2016\AndroidStudioProjects\PocketHouse\app\src\main\java\com\example\jasonbenoit\pockethouse\HouseActivity.java'" />
+    <option name="SEARCH_SCOPE" value="File 'F:\School Winter2016\AndroidStudioProjects\PocketHouse\app\src\main\java\com\example\jasonbenoit\pockethouse\HouseActivity.java'" />
   </component>
 </application>
